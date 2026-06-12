@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MusicFlow">
+  <meta name="description" content="Tu reproductor de música personal">
+  <title>MusicFlow</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- PANTALLA: INICIO -->
+  <section class="screen active" id="screen-home">
+    <div class="screen-header">
+      <h1 class="logo">Music<span>Flow</span></h1>
+      <button class="icon-btn" id="shuffle-all-btn" aria-label="Mezclar todo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+          <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+        </svg>
+      </button>
+    </div>
+    <p class="section-label">TODAS LAS CANCIONES</p>
+    <div class="song-list" id="home-list"></div>
+  </section>
+
+  <!-- PANTALLA: BUSCAR -->
+  <section class="screen" id="screen-search">
+    <div class="screen-header">
+      <h1 class="screen-title">Buscar</h1>
+    </div>
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="search-input" type="search" placeholder="Canciones, artistas..." autocomplete="off" spellcheck="false">
+    </div>
+    <div class="song-list" id="search-list"></div>
+    <div class="empty-state" id="search-empty" style="display:none">
+      <div class="empty-icon">🔍</div>
+      <p>Busca tus canciones favoritas</p>
+    </div>
+  </section>
+
+  <!-- PANTALLA: LISTAS -->
+  <section class="screen" id="screen-library">
+    <div class="screen-header">
+      <h1 class="screen-title" id="library-title">Mis Listas</h1>
+      <button class="icon-btn" id="pl-back-btn" onclick="backToPlaylists()" style="display:none" aria-label="Volver">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+    </div>
+    <div id="playlist-grid" class="playlist-grid"></div>
+    <div id="playlist-detail" style="display:none">
+      <div class="song-list" id="playlist-songs"></div>
+    </div>
+  </section>
+
+  <!-- PANTALLA: FAVORITOS -->
+  <section class="screen" id="screen-favorites">
+    <div class="screen-header">
+      <h1 class="screen-title">Favoritos</h1>
+    </div>
+    <div class="song-list" id="fav-list"></div>
+    <div class="empty-state" id="fav-empty" style="display:none">
+      <div class="empty-icon">💚</div>
+      <p>Aún no tienes favoritos</p>
+      <small>Toca el corazón en cualquier canción</small>
+    </div>
+  </section>
+
+  <!-- MINI PLAYER -->
+  <div id="mini-player" style="display:none" onclick="openFullPlayer()">
+    <div class="mp-left">
+      <div class="mp-cover" id="mp-cover">
+        <span id="mp-emoji">🎵</span>
+      </div>
+      <div class="mp-info">
+        <div class="mp-title" id="mp-title">—</div>
+        <div class="mp-artist" id="mp-artist">—</div>
+      </div>
+    </div>
+    <div class="mp-controls" onclick="event.stopPropagation()">
+      <button class="mp-btn" id="mp-play-btn" aria-label="Play/Pause">
+        <svg id="mp-play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+      </button>
+      <button class="mp-btn" id="mp-next-btn" aria-label="Siguiente">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,3 15,12 5,21"/><rect x="17" y="3" width="3" height="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mp-progress-bar"><div class="mp-progress-fill" id="mp-progress"></div></div>
+  </div>
+
+  <!-- NAV INFERIOR -->
+  <nav id="bottom-nav">
+    <button class="nav-item active" data-screen="home">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span>Inicio</span>
+    </button>
+    <button class="nav-item" data-screen="search">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <span>Buscar</span>
+    </button>
+    <button class="nav-item" data-screen="library">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+      </svg>
+      <span>Listas</span>
+    </button>
+    <button class="nav-item" data-screen="favorites">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      <span>Favs</span>
+    </button>
+  </nav>
+
+  <!-- REPRODUCTOR COMPLETO -->
+  <div id="full-player">
+    <div class="fp-drag-handle"></div>
+
+    <div class="fp-topbar">
+      <button class="fp-icon-btn" id="fp-close" aria-label="Cerrar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <span class="fp-playlist-label" id="fp-playlist-name">Reproduciendo</span>
+      <button class="fp-icon-btn" id="fp-menu-btn" aria-label="Opciones" style="visibility:hidden">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="fp-cover-wrap">
+      <div class="fp-cover" id="fp-cover">
+        <span id="fp-cover-emoji" class="fp-emoji">🎵</span>
+        <img id="fp-cover-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:16px;">
+      </div>
+    </div>
+
+    <div class="fp-meta">
+      <div>
+        <div class="fp-title" id="fp-title">—</div>
+        <div class="fp-artist" id="fp-artist">—</div>
+      </div>
+      <button class="fp-fav-btn" id="fp-fav-btn" aria-label="Favorito">
+        <svg id="fp-fav-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="fp-progress-wrap">
+      <div class="fp-seekbar-container">
+        <div class="fp-seekbar" id="fp-seekbar">
+          <div class="fp-seekbar-fill" id="fp-seekbar-fill"></div>
+          <div class="fp-seekbar-thumb" id="fp-seekbar-thumb"></div>
+        </div>
+      </div>
+      <div class="fp-times">
+        <span id="fp-time-current">0:00</span>
+        <span id="fp-time-total">0:00</span>
+      </div>
+    </div>
+
+    <div class="fp-controls">
+      <button class="fp-ctrl-btn" id="fp-shuffle-btn" aria-label="Aleatoria">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+          <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+        </svg>
+      </button>
+      <button class="fp-ctrl-btn fp-prev-btn" id="fp-prev-btn" aria-label="Anterior">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="19,3 9,12 19,21"/><rect x="5" y="3" width="3" height="18"/>
+        </svg>
+      </button>
+      <button class="fp-play-btn" id="fp-play-btn" aria-label="Play/Pause">
+        <svg id="fp-play-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+      </button>
+      <button class="fp-ctrl-btn fp-next-btn" id="fp-next-btn" aria-label="Siguiente">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,3 15,12 5,21"/><rect x="17" y="3" width="3" height="18"/>
+        </svg>
+      </button>
+      <button class="fp-ctrl-btn" id="fp-repeat-btn" aria-label="Repetir">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+          <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="fp-volume-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="opacity:.5">
+        <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      </svg>
+      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1" class="volume-range">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </svg>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/library.js"></script>
+<script src="js/player.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
