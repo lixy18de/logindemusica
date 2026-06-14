@@ -1,4 +1,3 @@
-ary · JS
 const LIBRARY = [
   {
     id: 1,
@@ -89,13 +88,13 @@ const LIBRARY = [
     playlists: ["all", "temerarios"]
   }
 ];
- 
+
 const PLAYLISTS = [
   { id: "all",         name: "Todas",        emoji: "🎵", color: "#1db954" },
   { id: "jay-wheeler", name: "Jay Wheeler",  emoji: "💚", color: "#1db954" },
   { id: "temerarios",  name: "Temerarios",   emoji: "🌹", color: "#e05252" }
 ];
- 
+
 function getAllSongs() {
   return [...LIBRARY];
 }
