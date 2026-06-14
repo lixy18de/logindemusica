@@ -219,35 +219,41 @@
 
 </div>
 
-<!-- ══ BOTÓN INSTALAR PWA ══ -->
-<div id="install-banner" style="
+<!-- ══ BOTÓN INSTALAR PWA — SIEMPRE VISIBLE ══ -->
+<div id="install-banner" onclick="installApp()" style="
   position: fixed;
   bottom: 100px;
   left: 50%;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%);
   background: linear-gradient(135deg, #1db954, #158a3e);
   color: #000;
   padding: 14px 28px;
   border-radius: 100px;
-  display: none;
+  display: flex;
   align-items: center;
   gap: 10px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 15px;
   font-weight: 700;
-  box-shadow: 0 8px 32px rgba(29,185,84,0.5);
+  box-shadow: 0 8px 32px rgba(29,185,84,0.45);
   z-index: 9999;
   cursor: pointer;
   white-space: nowrap;
-  opacity: 1;
-  transition: opacity 0.5s ease, transform 0.5s ease;
   border: none;
+  animation: pulse-btn 2.5s ease-in-out infinite;
 ">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
     <path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5v-2z"/>
   </svg>
-  Instalar MusicFlow
+  📲 Instalar MusicFlow
 </div>
+
+<style>
+@keyframes pulse-btn {
+  0%, 100% { box-shadow: 0 8px 32px rgba(29,185,84,0.45); transform: translateX(-50%) scale(1); }
+  50%       { box-shadow: 0 8px 48px rgba(29,185,84,0.7); transform: translateX(-50%) scale(1.04); }
+}
+</style>
 
 <script src="library.js"></script>
 <script src="player.js"></script>
@@ -255,31 +261,37 @@
 
 <script>
   let deferredPrompt = null;
-  const banner = document.getElementById('install-banner');
 
+  // Guardar el evento para usarlo al hacer clic
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    banner.style.display = 'flex';
-    setTimeout(hideBanner, 5000);
   });
 
-  banner.addEventListener('click', async () => {
+  async function installApp() {
     if (deferredPrompt) {
+      // Tiene el prompt nativo → abrirlo
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       deferredPrompt = null;
+      if (outcome === 'accepted') {
+        document.getElementById('install-banner').style.display = 'none';
+      }
+    } else {
+      // No hay prompt (iOS o ya instalada) → mostrar instrucciones
+      alert('Para instalar:\n\n📱 Android: Menú (⋮) → "Añadir a pantalla de inicio"\n🍎 iPhone: Compartir (□↑) → "Añadir a inicio"');
     }
-    hideBanner();
-  });
-
-  function hideBanner() {
-    banner.style.opacity = '0';
-    banner.style.transform = 'translateX(-50%) translateY(20px)';
-    setTimeout(() => { banner.style.display = 'none'; }, 500);
   }
 
-  window.addEventListener('appinstalled', () => hideBanner());
+  // Ocultar si ya está instalada
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('install-banner').style.display = 'none';
+  });
+
+  // Ocultar si se abre como app instalada
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    document.getElementById('install-banner').style.display = 'none';
+  }
 </script>
 
 </body>
