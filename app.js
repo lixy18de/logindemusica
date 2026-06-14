@@ -339,4 +339,52 @@ document.addEventListener("DOMContentLoaded", () => {
   showScreen("home");
   registerSW();
   console.log("%cMusicFlow cargado 🎵", "color:#1db954;font-weight:bold;font-size:14px");
+  // =============================================
+// INSTALAR PWA
+// =============================================
+
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+
+  deferredPrompt = e;
+
+  const installBtn = document.getElementById("install-btn");
+
+  if (installBtn) {
+    installBtn.style.display = "inline-block";
+  }
+});
+
+window.addEventListener("appinstalled", () => {
+  const installBtn = document.getElementById("install-btn");
+
+  if (installBtn) {
+    installBtn.style.display = "none";
+  }
+
+  deferredPrompt = null;
+});
+
+document.addEventListener("click", async (e) => {
+
+  if (e.target.id !== "install-btn") return;
+
+  if (!deferredPrompt) {
+    alert("La aplicación ya está instalada o tu navegador no permite instalarla.");
+    return;
+  }
+
+  deferredPrompt.prompt();
+
+  const result = await deferredPrompt.userChoice;
+
+  if (result.outcome === "accepted") {
+    console.log("MusicFlow instalada");
+  }
+
+  deferredPrompt = null;
+
+  e.target.style.display = "none";
 });
