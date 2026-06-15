@@ -1,16 +1,12 @@
-const CACHE_NAME = "musicflow-v2";
-
+const CACHE_NAME = "musicflow-v3";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
-  "./manifest.json"
-];
-  "./js/library.js",
-  "./js/player.js",
-  "./js/app.js",
-
-  "./css/style.css",
-
+  "./manifest.json",
+  "./style.css",
+  "./library.js",
+  "./player.js",
+  "./app.js",
   "./icon-72.png",
   "./icon-96.png",
   "./icon-128.png",
@@ -19,7 +15,6 @@ const STATIC_ASSETS = [
   "./icon-192.png",
   "./icon-384.png",
   "./icon-512.png",
-
   "./que-te-paso.aac",
   "./jay-zhamira.aac",
   "./extranandote.aac",
@@ -30,7 +25,7 @@ const STATIC_ASSETS = [
   "./se-que-te-amo.aac"
 ];
 
-// Instalar
+// Instalar y cachear todo
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -39,49 +34,33 @@ self.addEventListener("install", event => {
   );
 });
 
-// Activar
+// Activar y limpiar caches viejos
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
         keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
       )
     ).then(() => self.clients.claim())
   );
 });
 
-// Fetch
+// Fetch — primero cache, luego red
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-
-        return fetch(event.request)
-          .then(networkResponse => {
-
-            if (
-              !networkResponse ||
-              networkResponse.status !== 200
-            ) {
-              return networkResponse;
-            }
-
-            const responseClone = networkResponse.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseClone);
-              });
-
-            return networkResponse;
-          });
-      })
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
+        if (!response || response.status !== 200) return response;
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      }).catch(() => {
+        // Sin internet y sin cache — devolver página principal
+        return caches.match("./index.html");
+      });
+    })
   );
 });
