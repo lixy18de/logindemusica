@@ -65,17 +65,7 @@ const LIBRARY = [
     duration: 215,
     playlists: ["all", "temerarios"]
   },
-  {
-    id: 7,
-    title: "Enamorado de Ti",
-    artist: "Los Temerarios",
-    album: "Single",
-    src: "enamorado-de-ti.aac",
-    emoji: "❤️",
-    cover: null,
-    duration: 220,
-    playlists: ["all", "temerarios"]
-  },
+ 
   {
     id: 8,
     title: "Sé Que Te Amo",
