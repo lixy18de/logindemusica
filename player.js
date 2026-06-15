@@ -6,10 +6,10 @@ const Player = (() => {
 
   // ---- Estado interno ----
   let audio        = new Audio();
-  let queue        = [];      // lista actual de reproducción
-  let queueIndex   = -1;      // posición en la cola
+  let queue        = [];
+  let queueIndex   = -1;
   let shuffle      = false;
-  let repeatMode   = 0;       // 0=off  1=all  2=one
+  let repeatMode   = 0;
   let isPlaying    = false;
   let seekDragging = false;
 
@@ -89,10 +89,10 @@ const Player = (() => {
     }
   }
 
-function onError() {
-  console.warn("Error cargando audio:", audio.src);
-  // No saltar automáticamente para evitar loops
-}
+  // ── CORREGIDO: sin loop automático ──
+  function onError() {
+    console.warn("Error cargando audio:", audio.src);
+    setPlayState(false);
   }
 
   // ---- Bind controles UI ----
@@ -110,7 +110,7 @@ function onError() {
       audio.volume = parseFloat(e.target.value);
     });
 
-    // Seekbar — click y drag
+    // Seekbar
     DOM.fpSeekContainer.addEventListener("click",     onSeekClick);
     DOM.fpSeekContainer.addEventListener("mousedown", onSeekStart);
     DOM.fpSeekContainer.addEventListener("touchstart", onSeekStart, { passive: true });
@@ -122,7 +122,7 @@ function onError() {
     // Mini player → abrir full player
     DOM.miniPlayer.addEventListener("click", openFullPlayer);
 
-    // Swipe hacia abajo para cerrar el full player
+    // Swipe hacia abajo para cerrar
     let touchStartY = 0;
     DOM.fullPlayer.addEventListener("touchstart", e => {
       touchStartY = e.touches[0].clientY;
@@ -170,6 +170,13 @@ function onError() {
   // ---- Reproducción ----
   function loadSong(song, autoplay = true) {
     if (!song) return;
+
+    // Detener audio anterior limpiamente
+    audio.pause();
+    audio.src = "";
+    audio.load();
+
+    // Asignar nueva fuente
     audio.src = song.src;
     audio.load();
 
@@ -180,28 +187,29 @@ function onError() {
     DOM.fpTimeTotal.textContent   = formatTime(song.duration || 0);
     DOM.fpSeekbarFill.style.width = "0%";
     DOM.fpSeekbarThumb.style.left = "0%";
+    DOM.mpProgress.style.width    = "0%";
 
     // Cover
     if (song.cover) {
-      DOM.fpCoverImg.src          = song.cover;
-      DOM.fpCoverImg.style.display = "block";
+      DOM.fpCoverImg.src             = song.cover;
+      DOM.fpCoverImg.style.display   = "block";
       DOM.fpCoverEmoji.style.display = "none";
     } else {
-      DOM.fpCoverImg.style.display = "none";
+      DOM.fpCoverImg.style.display   = "none";
       DOM.fpCoverEmoji.style.display = "block";
-      DOM.fpCoverEmoji.textContent = song.emoji || "🎵";
+      DOM.fpCoverEmoji.textContent   = song.emoji || "🎵";
     }
 
     // Mini player
-    DOM.mpTitle.textContent  = song.title;
-    DOM.mpArtist.textContent = song.artist;
-    DOM.mpEmoji.textContent  = song.emoji || "🎵";
+    DOM.mpTitle.textContent      = song.title;
+    DOM.mpArtist.textContent     = song.artist;
+    DOM.mpEmoji.textContent      = song.emoji || "🎵";
     DOM.miniPlayer.style.display = "flex";
 
     // Favorito
     updateFavBtn(isFavorite(song.id));
 
-    // Notificar a app.js para resaltar la canción activa
+    // Notificar a app.js
     if (typeof onSongChanged === "function") onSongChanged(song);
 
     if (autoplay) {
@@ -267,17 +275,14 @@ function onError() {
   function cycleRepeat() {
     repeatMode = (repeatMode + 1) % 3;
     const icons = [
-      // 0: off
       `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
         <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
       </svg>`,
-      // 1: all
       `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
         <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
       </svg>`,
-      // 2: one
       `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
         <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
@@ -320,13 +325,13 @@ function onError() {
       <polygon points="5,3 19,12 5,21"/>
     </svg>`;
 
-    DOM.fpPlayBtn.innerHTML = playing ? pauseIcon  : playIcon;
+    DOM.fpPlayBtn.innerHTML = playing ? pauseIcon   : playIcon;
     DOM.mpPlayBtn.innerHTML = playing ? pauseIconSm : playIconSm;
 
     if (typeof onPlayStateChanged === "function") onPlayStateChanged(playing);
   }
 
-  // ---- Full player open/close ----
+  // ---- Full player ----
   function openFullPlayer() {
     DOM.fullPlayer.classList.add("open");
     document.body.style.overflow = "hidden";
@@ -365,7 +370,6 @@ function onError() {
     bindControls();
   }
 
-  // ---- API pública ----
   return {
     init,
     play,
