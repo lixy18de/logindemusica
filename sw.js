@@ -1,4 +1,7 @@
-const CACHE_NAME = "musicflow-v3";
+const CACHE_NAME = "musicflow-v4";
+const AUDIO_CACHE = "musicflow-audio-v4";
+
+// Archivos estáticos — se cachean al instalar
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -14,7 +17,11 @@ const STATIC_ASSETS = [
   "./icon-152.png",
   "./icon-192.png",
   "./icon-384.png",
-  "./icon-512.png",
+  "./icon-512.png"
+];
+
+// Canciones — se cachean cuando se reproducen por primera vez
+const AUDIO_FILES = [
   "./que-te-paso.aac",
   "./jay-zhamira.aac",
   "./extranandote.aac",
@@ -25,42 +32,72 @@ const STATIC_ASSETS = [
   "./se-que-te-amo.aac"
 ];
 
-// Instalar y cachear todo
+// ── INSTALAR ──
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(STATIC_ASSETS))
+      .then(() => {
+        // Intentar cachear audios en segundo plano (sin bloquear)
+        caches.open(AUDIO_CACHE).then(cache => {
+          AUDIO_FILES.forEach(url => {
+            fetch(url).then(res => {
+              if (res.ok) cache.put(url, res);
+            }).catch(() => {});
+          });
+        });
+      })
       .then(() => self.skipWaiting())
   );
 });
 
-// Activar y limpiar caches viejos
+// ── ACTIVAR ──
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) return caches.delete(key);
-        })
+        keys.filter(k => k !== CACHE_NAME && k !== AUDIO_CACHE)
+            .map(k => caches.delete(k))
       )
     ).then(() => self.clients.claim())
   );
 });
 
-// Fetch — primero cache, luego red
+// ── FETCH ──
 self.addEventListener("fetch", event => {
+  const url = event.request.url;
+  const isAudio = /\.(aac|mp3|ogg|wav|flac|m4a)$/i.test(url);
+
+  if (isAudio) {
+    // Para audio: cache primero, si no hay va a red y lo guarda
+    event.respondWith(
+      caches.open(AUDIO_CACHE).then(cache =>
+        cache.match(event.request).then(cached => {
+          if (cached) return cached;
+          return fetch(event.request).then(response => {
+            if (response && response.ok) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          }).catch(() => cached || new Response('', { status: 503 }));
+        })
+      )
+    );
+    return;
+  }
+
+  // Para todo lo demás: cache primero, luego red
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        if (!response || response.status !== 200) return response;
+        if (!response || response.status !== 200 || response.type === 'opaque') {
+          return response;
+        }
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         return response;
-      }).catch(() => {
-        // Sin internet y sin cache — devolver página principal
-        return caches.match("./index.html");
-      });
+      }).catch(() => caches.match("./index.html"));
     })
   );
 });
