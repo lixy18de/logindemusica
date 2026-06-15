@@ -89,10 +89,10 @@ const Player = (() => {
     }
   }
 
-  function onError() {
-    console.warn("Error cargando audio:", audio.src);
-    // intentar siguiente si hay
-    if (queue.length > 1) setTimeout(next, 500);
+function onError() {
+  console.warn("Error cargando audio:", audio.src);
+  // No saltar automáticamente para evitar loops
+}
   }
 
   // ---- Bind controles UI ----
