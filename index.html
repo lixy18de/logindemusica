@@ -10,13 +10,12 @@
   <meta name="description" content="Tu reproductor de música personal">
   <title>MusicFlow</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="app">
 
-  <!-- PANTALLA: INICIO -->
   <section class="screen active" id="screen-home">
     <div class="screen-header">
       <h1 class="logo">Music<span>Flow</span></h1>
@@ -31,7 +30,6 @@
     <div class="song-list" id="home-list"></div>
   </section>
 
-  <!-- PANTALLA: BUSCAR -->
   <section class="screen" id="screen-search">
     <div class="screen-header">
       <h1 class="screen-title">Buscar</h1>
@@ -49,7 +47,6 @@
     </div>
   </section>
 
-  <!-- PANTALLA: LISTAS -->
   <section class="screen" id="screen-library">
     <div class="screen-header">
       <h1 class="screen-title" id="library-title">Mis Listas</h1>
@@ -65,7 +62,6 @@
     </div>
   </section>
 
-  <!-- PANTALLA: FAVORITOS -->
   <section class="screen" id="screen-favorites">
     <div class="screen-header">
       <h1 class="screen-title">Favoritos</h1>
@@ -78,74 +74,53 @@
     </div>
   </section>
 
-  <!-- MINI PLAYER -->
   <div id="mini-player" style="display:none" onclick="openFullPlayer()">
     <div class="mp-left">
-      <div class="mp-cover" id="mp-cover">
-        <span id="mp-emoji">🎵</span>
-      </div>
+      <div class="mp-cover" id="mp-cover"><span id="mp-emoji">🎵</span></div>
       <div class="mp-info">
         <div class="mp-title" id="mp-title">—</div>
         <div class="mp-artist" id="mp-artist">—</div>
       </div>
     </div>
     <div class="mp-controls" onclick="event.stopPropagation()">
-      <button class="mp-btn" id="mp-play-btn" aria-label="Play/Pause">
-        <svg id="mp-play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <polygon points="5,3 19,12 5,21"/>
-        </svg>
+      <button class="mp-btn" id="mp-play-btn">
+        <svg id="mp-play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
       </button>
-      <button class="mp-btn" id="mp-next-btn" aria-label="Siguiente">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-          <polygon points="5,3 15,12 5,21"/><rect x="17" y="3" width="3" height="18"/>
-        </svg>
+      <button class="mp-btn" id="mp-next-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 15,12 5,21"/><rect x="17" y="3" width="3" height="18"/></svg>
       </button>
     </div>
     <div class="mp-progress-bar"><div class="mp-progress-fill" id="mp-progress"></div></div>
   </div>
 
-  <!-- NAV INFERIOR -->
   <nav id="bottom-nav">
     <button class="nav-item active" data-screen="home">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-      </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       <span>Inicio</span>
     </button>
     <button class="nav-item" data-screen="search">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span>Buscar</span>
     </button>
     <button class="nav-item" data-screen="library">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-      </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
       <span>Listas</span>
     </button>
     <button class="nav-item" data-screen="favorites">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       <span>Favs</span>
     </button>
   </nav>
 
-  <!-- REPRODUCTOR COMPLETO -->
   <div id="full-player">
     <div class="fp-drag-handle"></div>
     <div class="fp-topbar">
-      <button class="fp-icon-btn" id="fp-close" aria-label="Cerrar">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
+      <button class="fp-icon-btn" id="fp-close">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <span class="fp-playlist-label" id="fp-playlist-name">Reproduciendo</span>
       <button class="fp-icon-btn" style="visibility:hidden">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
-        </svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
       </button>
     </div>
     <div class="fp-cover-wrap">
@@ -159,7 +134,7 @@
         <div class="fp-title" id="fp-title">—</div>
         <div class="fp-artist" id="fp-artist">—</div>
       </div>
-      <button class="fp-fav-btn" id="fp-fav-btn" aria-label="Favorito">
+      <button class="fp-fav-btn" id="fp-fav-btn">
         <svg id="fp-fav-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
         </svg>
@@ -178,28 +153,22 @@
       </div>
     </div>
     <div class="fp-controls">
-      <button class="fp-ctrl-btn" id="fp-shuffle-btn" aria-label="Aleatoria">
+      <button class="fp-ctrl-btn" id="fp-shuffle-btn">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
           <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
         </svg>
       </button>
-      <button class="fp-ctrl-btn fp-prev-btn" id="fp-prev-btn" aria-label="Anterior">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-          <polygon points="19,3 9,12 19,21"/><rect x="5" y="3" width="3" height="18"/>
-        </svg>
+      <button class="fp-ctrl-btn fp-prev-btn" id="fp-prev-btn">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 9,12 19,21"/><rect x="5" y="3" width="3" height="18"/></svg>
       </button>
-      <button class="fp-play-btn" id="fp-play-btn" aria-label="Play/Pause">
-        <svg id="fp-play-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-          <polygon points="5,3 19,12 5,21"/>
-        </svg>
+      <button class="fp-play-btn" id="fp-play-btn">
+        <svg id="fp-play-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
       </button>
-      <button class="fp-ctrl-btn fp-next-btn" id="fp-next-btn" aria-label="Siguiente">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-          <polygon points="5,3 15,12 5,21"/><rect x="17" y="3" width="3" height="18"/>
-        </svg>
+      <button class="fp-ctrl-btn fp-next-btn" id="fp-next-btn">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 15,12 5,21"/><rect x="17" y="3" width="3" height="18"/></svg>
       </button>
-      <button class="fp-ctrl-btn" id="fp-repeat-btn" aria-label="Repetir">
+      <button class="fp-ctrl-btn" id="fp-repeat-btn">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
           <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
@@ -219,28 +188,25 @@
 
 </div>
 
-<!-- ══ BOTÓN INSTALAR PWA — SIEMPRE VISIBLE ══ -->
-<div id="install-banner" onclick="installApp()" style="
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #1db954, #158a3e);
-  color: #000;
-  padding: 14px 28px;
-  border-radius: 100px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  box-shadow: 0 8px 32px rgba(29,185,84,0.45);
-  z-index: 9999;
-  cursor: pointer;
-  white-space: nowrap;
-  border: none;
-  animation: pulse-btn 2.5s ease-in-out infinite;
+<!-- BOTÓN INSTALAR — SOLO ANDROID -->
+<style>
+@keyframes pulse-btn {
+  0%,100% { box-shadow:0 8px 32px rgba(29,185,84,0.45); transform:translateX(-50%) scale(1); }
+  50%      { box-shadow:0 8px 48px rgba(29,185,84,0.7);  transform:translateX(-50%) scale(1.04); }
+}
+</style>
+
+<div id="install-banner" style="
+  position:fixed; bottom:100px; left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,#1db954,#158a3e);
+  color:#000; padding:14px 28px; border-radius:100px;
+  display:none; align-items:center; gap:10px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:15px; font-weight:700;
+  box-shadow:0 8px 32px rgba(29,185,84,0.45);
+  z-index:9999; cursor:pointer; white-space:nowrap;
+  border:none; animation:pulse-btn 2.5s ease-in-out infinite;
 ">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
     <path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5v-2z"/>
@@ -248,49 +214,38 @@
   📲 Instalar MusicFlow
 </div>
 
-<style>
-@keyframes pulse-btn {
-  0%, 100% { box-shadow: 0 8px 32px rgba(29,185,84,0.45); transform: translateX(-50%) scale(1); }
-  50%       { box-shadow: 0 8px 48px rgba(29,185,84,0.7); transform: translateX(-50%) scale(1.04); }
-}
-</style>
-
 <script src="library.js"></script>
 <script src="player.js"></script>
 <script src="app.js"></script>
 
 <script>
   let deferredPrompt = null;
+  const banner = document.getElementById('install-banner');
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
-  // Guardar el evento para usarlo al hacer clic
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-  });
+  // Solo mostrar en Android y si no está instalada
+  if (isAndroid && !isStandalone) {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      banner.style.display = 'flex';
+    });
 
-  async function installApp() {
-    if (deferredPrompt) {
-      // Tiene el prompt nativo → abrirlo
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      if (outcome === 'accepted') {
-        document.getElementById('install-banner').style.display = 'none';
+    banner.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        await deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        if (outcome === 'accepted') {
+          banner.style.display = 'none';
+        }
       }
-    } else {
-      // No hay prompt (iOS o ya instalada) → mostrar instrucciones
-      alert('Para instalar:\n\n📱 Android: Menú (⋮) → "Añadir a pantalla de inicio"\n🍎 iPhone: Compartir (□↑) → "Añadir a inicio"');
-    }
-  }
+    });
 
-  // Ocultar si ya está instalada
-  window.addEventListener('appinstalled', () => {
-    document.getElementById('install-banner').style.display = 'none';
-  });
-
-  // Ocultar si se abre como app instalada
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    document.getElementById('install-banner').style.display = 'none';
+    window.addEventListener('appinstalled', () => {
+      banner.style.display = 'none';
+    });
   }
 </script>
 
