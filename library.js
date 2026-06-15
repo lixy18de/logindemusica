@@ -4,7 +4,7 @@ const LIBRARY = [
     title: "¿Qué Te Pasó?",
     artist: "Greeicy, Jay Wheeler",
     album: "Single",
-    src: "music/que-te-paso.aac",
+    src: "que-te-paso.aac",
     emoji: "💚",
     cover: null,
     duration: 165,
@@ -15,7 +15,7 @@ const LIBRARY = [
     title: "Jay & Zhamira",
     artist: "Jay Wheeler & Zhamira Zambrano",
     album: "Single",
-    src: "music/jay-zhamira.aac",
+    src: "jay-zhamira.aac",
     emoji: "🎵",
     cover: null,
     duration: 180,
@@ -26,7 +26,7 @@ const LIBRARY = [
     title: "Extrañándote",
     artist: "Zhamira & Jay Wheeler",
     album: "Single",
-    src: "music/extranandote.aac",
+    src: "extranandote.aac",
     emoji: "💙",
     cover: null,
     duration: 195,
@@ -37,7 +37,7 @@ const LIBRARY = [
     title: "De Lejitos",
     artist: "Jay Wheeler",
     album: "Single",
-    src: "music/de-lejitos.aac",
+    src: "de-lejitos.aac",
     emoji: "🎶",
     cover: null,
     duration: 210,
@@ -48,7 +48,7 @@ const LIBRARY = [
     title: "Ven Porque Te Necesito",
     artist: "Los Temerarios",
     album: "Single",
-    src: "music/ven-porque-te.aac",
+    src: "ven-porque-te.aac",
     emoji: "🌹",
     cover: null,
     duration: 200,
@@ -59,7 +59,7 @@ const LIBRARY = [
     title: "Tu Última Canción",
     artist: "Los Temerarios",
     album: "Single",
-    src: "music/tu-ultima-cancion.aac",
+    src: "tu-ultima-cancion.aac",
     emoji: "🎸",
     cover: null,
     duration: 215,
@@ -70,7 +70,7 @@ const LIBRARY = [
     title: "Enamorado de Ti",
     artist: "Los Temerarios",
     album: "Single",
-    src: "music/enamorado-de-ti.aac",
+    src: "enamorado-de-ti.aac",
     emoji: "❤️",
     cover: null,
     duration: 220,
@@ -81,7 +81,7 @@ const LIBRARY = [
     title: "Sé Que Te Amo",
     artist: "Los Temerarios",
     album: "Single",
-    src: "music/se-que-te-amo.aac",
+    src: "se-que-te-amo.aac",
     emoji: "💕",
     cover: null,
     duration: 205,
@@ -98,16 +98,13 @@ const PLAYLISTS = [
 function getAllSongs() {
   return [...LIBRARY];
 }
-
 function getSongById(id) {
   return LIBRARY.find(s => s.id === id) || null;
 }
-
 function getSongsByPlaylist(playlistId) {
   if (playlistId === "all") return [...LIBRARY];
   return LIBRARY.filter(s => s.playlists.includes(playlistId));
 }
-
 function searchSongs(query) {
   if (!query || query.trim() === "") return [];
   const q = query.toLowerCase().trim();
@@ -117,14 +114,12 @@ function searchSongs(query) {
     s.album.toLowerCase().includes(q)
   );
 }
-
 function getFavorites() {
   try {
     const raw = localStorage.getItem("mf_favorites");
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
-
 function toggleFavorite(songId) {
   const favs = getFavorites();
   const idx  = favs.indexOf(songId);
@@ -136,11 +131,9 @@ function toggleFavorite(songId) {
   localStorage.setItem("mf_favorites", JSON.stringify(favs));
   return favs.includes(songId);
 }
-
 function isFavorite(songId) {
   return getFavorites().includes(songId);
 }
-
 function getFavoriteSongs() {
   const favIds = getFavorites();
   return favIds.map(id => getSongById(id)).filter(Boolean);
