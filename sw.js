@@ -1,6 +1,5 @@
 const CACHE_NAME = 'musicflow-v1';
 const ASSETS = [
-  '/',
   '/logindemusica/',
   '/logindemusica/index.html',
   '/logindemusica/manifest.json',
