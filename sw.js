@@ -1,54 +1,87 @@
-const CACHE_NAME = 'musicflow-v1';
+const CACHE_NAME = "musicflow-v2";
+
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/css/style.css',
-  '/js/library.js',
-  '/js/player.js',
-  '/js/app.js',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  "./",
+  "./index.html",
+  "./manifest.json",
+
+  "./js/library.js",
+  "./js/player.js",
+  "./js/app.js",
+
+  "./css/style.css",
+
+  "./icon-72.png",
+  "./icon-96.png",
+  "./icon-128.png",
+  "./icon-144.png",
+  "./icon-152.png",
+  "./icon-192.png",
+  "./icon-384.png",
+  "./icon-512.png",
+
+  "./que-te-paso.aac",
+  "./jay-zhamira.aac",
+  "./extranandote.aac",
+  "./de-lejitos.aac",
+  "./ven-porque-te.aac",
+  "./tu-ultima-cancion.aac",
+  "./enamorado-de-ti.aac",
+  "./se-que-te-amo.aac"
 ];
 
-// Instalar — cachear archivos estáticos
-self.addEventListener('install', e => {
-  e.waitUntil(
+// Instalar
+self.addEventListener("install", event => {
+  event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(STATIC_ASSETS))
       .then(() => self.skipWaiting())
   );
 });
 
-// Activar — limpiar cachés viejos
-self.addEventListener('activate', e => {
-  e.waitUntil(
+// Activar
+self.addEventListener("activate", event => {
+  event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      )
     ).then(() => self.clients.claim())
   );
 });
 
-// Fetch — cache first para estáticos, network first para música
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
+// Fetch
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
 
-  // Los MP3 van directo a la red (sin cachear, son grandes)
-  if (url.pathname.startsWith('/music/') || url.pathname.match(/\.(mp3|ogg|wav|flac)$/i)) {
-    e.respondWith(fetch(e.request));
-    return;
-  }
+        return fetch(event.request)
+          .then(networkResponse => {
 
-  // Todo lo demás: cache first, luego red
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(response => {
-        if (!response || response.status !== 200 || response.type !== 'basic') return response;
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-        return response;
-      });
-    })
+            if (
+              !networkResponse ||
+              networkResponse.status !== 200
+            ) {
+              return networkResponse;
+            }
+
+            const responseClone = networkResponse.clone();
+
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseClone);
+              });
+
+            return networkResponse;
+          });
+      })
   );
 });
