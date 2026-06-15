@@ -3,8 +3,8 @@ const CACHE_NAME = "musicflow-v2";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
-  "./manifest.json",
-
+  "./manifest.json"
+];
   "./js/library.js",
   "./js/player.js",
   "./js/app.js",
