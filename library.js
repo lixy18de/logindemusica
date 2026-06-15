@@ -48,7 +48,7 @@ const LIBRARY = [
     title: "Ven Porque Te Necesito",
     artist: "Los Temerarios",
     album: "Single",
-    src: "ven-porque-te .aac",
+    src: "ven-porque-te.aac",
     emoji: "🌹",
     cover: null,
     duration: 200,
