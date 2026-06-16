@@ -1,4 +1,4 @@
-const CACHE_NAME = 'musicflow-v7';
+const CACHE_NAME = 'musicflow-v8';
 const ASSETS = [
   '/logindemusica/index.html',
   '/logindemusica/manifest.json',
@@ -26,9 +26,10 @@ const ASSETS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      // Cachear uno por uno para que un error no rompa todo
       return Promise.allSettled(
-        ASSETS.map(url => cache.add(url).catch(e => console.warn('No se pudo cachear:', url, e)))
+        ASSETS.map(url =>
+          cache.add(url).catch(e => console.warn('No se pudo cachear:', url))
+        )
       );
     }).then(() => self.skipWaiting())
   );
@@ -45,15 +46,25 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Ignorar favicon y requests que no sean http
-  if (!event.request.url.startsWith('http')) return;
-  if (event.request.url.includes('favicon.ico')) return;
+  const url = event.request.url;
+
+  // Ignorar requests que no son http o favicon
+  if (!url.startsWith('http') || url.includes('favicon')) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
-      return fetch(event.request).catch(() => {
-        return caches.match('/logindemusica/index.html');
+
+      return fetch(event.request).then(response => {
+        return response;
+      }).catch(() => {
+        // Sin internet y sin caché — devolver página principal si existe
+        return caches.match('/logindemusica/index.html').then(fallback => {
+          return fallback || new Response('Sin conexión', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain' }
+          });
+        });
       });
     })
   );
