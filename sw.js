@@ -1,6 +1,5 @@
-const CACHE_NAME = 'musicflow-v6';
+const CACHE_NAME = 'musicflow-v7';
 const ASSETS = [
-  '/logindemusica/',
   '/logindemusica/index.html',
   '/logindemusica/manifest.json',
   '/logindemusica/style.css',
@@ -26,9 +25,12 @@ const ASSETS = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => {
+      // Cachear uno por uno para que un error no rompa todo
+      return Promise.allSettled(
+        ASSETS.map(url => cache.add(url).catch(e => console.warn('No se pudo cachear:', url, e)))
+      );
+    }).then(() => self.skipWaiting())
   );
 });
 
@@ -43,8 +45,16 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Ignorar favicon y requests que no sean http
+  if (!event.request.url.startsWith('http')) return;
+  if (event.request.url.includes('favicon.ico')) return;
+
   event.respondWith(
-    caches.match(event.request)
-      .then(cached => cached || fetch(event.request))
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).catch(() => {
+        return caches.match('/logindemusica/index.html');
+      });
+    })
   );
 });
