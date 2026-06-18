@@ -1,4 +1,4 @@
-const CACHE_NAME = 'musicflow-v9';
+const CACHE_NAME = 'musicflow-v10';
 const ASSETS = [
   '/logindemusica/',
   '/logindemusica/index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   '/logindemusica/library.js',
   '/logindemusica/player.js',
   '/logindemusica/app.js',
+  '/logindemusica/sw.js',
   '/logindemusica/icon-72.png',
   '/logindemusica/icon-96.png',
   '/logindemusica/icon-128.png',
@@ -42,23 +43,33 @@ self.addEventListener('activate', event => {
   );
 });
 
-// CLAVE: navigate requests siempre devuelven index.html del cache
-self.addEventListener('fetch', event => {
-  const req = event.request;
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
 
-  if (req.mode === 'navigate') {
-    event.respondWith(
-      caches.match('/logindemusica/index.html').then(cached => {
-        return cached || fetch(req);
-      })
-    );
-    return;
-  }
+self.addEventListener('fetch', event => {
+  const url = event.request.url;
+  if (!url.startsWith('http') || url.includes('favicon')) return;
 
   event.respondWith(
-    caches.match(req).then(cached => {
+    caches.match(event.request).then(cached => {
       if (cached) return cached;
-      return fetch(req).catch(() => new Response('', { status: 503 }));
+
+      // Si es navegación y no está en caché, devolver index.html
+      if (event.request.mode === 'navigate') {
+        return caches.match('/logindemusica/index.html').then(fallback => {
+          return fallback || fetch(event.request);
+        });
+      }
+
+      return fetch(event.request).catch(() => {
+        return caches.match('/logindemusica/index.html').then(fallback => {
+          return fallback || new Response('Sin conexión', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain' }
+          });
+        });
+      });
     })
   );
 });
