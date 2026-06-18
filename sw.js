@@ -1,5 +1,6 @@
-const CACHE_NAME = 'musicflow-v8';
+const CACHE_NAME = 'musicflow-v9';
 const ASSETS = [
+  '/logindemusica/',
   '/logindemusica/index.html',
   '/logindemusica/manifest.json',
   '/logindemusica/style.css',
@@ -27,9 +28,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return Promise.allSettled(
-        ASSETS.map(url =>
-          cache.add(url).catch(e => console.warn('No se pudo cachear:', url))
-        )
+        ASSETS.map(url => cache.add(url).catch(() => {}))
       );
     }).then(() => self.skipWaiting())
   );
@@ -38,34 +37,28 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      )
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
 
+// CLAVE: navigate requests siempre devuelven index.html del cache
 self.addEventListener('fetch', event => {
-  const url = event.request.url;
+  const req = event.request;
 
-  // Ignorar requests que no son http o favicon
-  if (!url.startsWith('http') || url.includes('favicon')) return;
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      caches.match('/logindemusica/index.html').then(cached => {
+        return cached || fetch(req);
+      })
+    );
+    return;
+  }
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    caches.match(req).then(cached => {
       if (cached) return cached;
-
-      return fetch(event.request).then(response => {
-        return response;
-      }).catch(() => {
-        // Sin internet y sin caché — devolver página principal si existe
-        return caches.match('/logindemusica/index.html').then(fallback => {
-          return fallback || new Response('Sin conexión', {
-            status: 503,
-            headers: { 'Content-Type': 'text/plain' }
-          });
-        });
-      });
+      return fetch(req).catch(() => new Response('', { status: 503 }));
     })
   );
 });
