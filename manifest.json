@@ -2,7 +2,7 @@
   "name": "MusicFlow",
   "short_name": "MusicFlow",
   "description": "Tu reproductor de música personal",
-  "start_url": "/logindemusica/",
+  "start_url": "/logindemusica/index.html",
   "scope": "/logindemusica/",
   "display": "standalone",
   "background_color": "#0a0a0f",
