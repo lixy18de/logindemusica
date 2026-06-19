@@ -18,8 +18,5 @@
     { "src": "icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
-  "categories": ["music", "entertainment"],
-  "screenshots": [
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ]
+  "categories": ["music", "entertainment"]
 }
