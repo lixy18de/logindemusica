@@ -112,6 +112,7 @@
     <button class="nav-item" data-screen="search">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span>Buscar</span>
+      
     </button>
     <button class="nav-item" data-screen="library">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -125,15 +126,38 @@
 
   <div id="full-player">
     <div class="fp-drag-handle"></div>
-    <div class="fp-topbar">
-      <button class="fp-icon-btn" id="fp-close">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <span class="fp-playlist-label" id="fp-playlist-name">Reproduciendo</span>
-      <button class="fp-icon-btn" style="visibility:hidden">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
-      </button>
+<div class="fp-topbar">
+  <button class="fp-icon-btn" id="fp-close">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </button>
+
+  <div style="text-align:center;">
+    <span class="fp-playlist-label" id="fp-playlist-name">
+      Reproduciendo
+    </span>
+
+    <div style="
+      font-size:10px;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color:#1DB954;
+      font-weight:700;
+      margin-top:4px;
+    ">
+      MusicFlow by Lixy Dayana Gómez
     </div>
+  </div>
+
+  <button class="fp-icon-btn" style="visibility:hidden">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="5" cy="12" r="2"/>
+      <circle cx="12" cy="12" r="2"/>
+      <circle cx="19" cy="12" r="2"/>
+    </svg>
+  </button>
+</div>
     <div class="fp-cover-wrap">
       <div class="fp-cover" id="fp-cover">
         <span id="fp-cover-emoji" class="fp-emoji">🎵</span>
